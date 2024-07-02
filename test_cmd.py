@@ -10,37 +10,38 @@ B_ON = b'\x02'
 B_OFF = b'\x12'
 C_ON = b'\x03'
 C_OFF = b'\x13'
-WAIT = b'\x0F'
-
-def open_com_port():
-    arduino = serial.Serial(port='COM5', baudrate=9600, timeout = 5)
-    return arduino
-    
+WAIT = b'\x0f'
+STOP_client = b'\xff'
+global arduino
+arduino = serial.Serial(port='COM5', baudrate=9600, timeout = 5)
 ##########
 
-def send_byte(byt,seriPort):
-    seriPort.write(byt)
-    wait_ACK(byt, seriPort)
-    if(not seriPort.is_open):
-        seriPort.close()
-        time.sleep(0.5)
-        seriPort = open_com_port()
-    return seriPort
-def wait(sec,seriPort):
-    seriPort = send_byte(WAIT, seriPort)
-    seriPort.write(bytes(sec, 'utf-8'))
-    while(seriPort.in_waiting):
-        msec = seriPort.readline();
+def send_byte(byt):
+    arduino.write(byt)
+    wait_ACK(byt)
+def wait(sec):
+    send_byte(WAIT)
+    arduino.write(bytes(sec, 'utf-8'))
+    while(arduino.in_waiting):
+        msec = arduino.readline();
         print(msec)
     time.sleep(int(sec))
-    return seriPort
-def wait_ACK(cmd,seriPort):
-    time.sleep(0.5)
-    if(not seriPort.in_waiting):
-        send_byte(cmd, seriPort)
-        print("resending")
+def wait_ACK(cmd):
+    global arduino
+    if(not arduino.is_open):
+        arduino.close()
+        time.sleep(0.5)
+        arduino = serial.Serial(port='COM5', baudrate=9600, timeout = 5)
 
-arduino = open_com_port() 
+    time.sleep(0.5)
+    
+    if(arduino.in_waiting):
+        ack = arduino.read()
+        print("ACK: ", ack)
+    else:
+        print("resending")
+        send_byte(cmd)
+        
 
 time.sleep(1)
 
@@ -53,21 +54,21 @@ for cmd in cmds:
     cmd = cmd.split()
     match cmd[0]:
         case 'START_CHARGING':
-            arduino = send_byte(START_CHARGING, arduino)
+            send_byte(START_CHARGING)
         case 'PE_ON':
-            arduino = send_byte(PE_ON, arduino)
+            send_byte(PE_ON)
         case 'PE_OFF':
-            arduino = send_byte(PE_OFF, arduino)
+            send_byte(PE_OFF)
         case 'B_ON':
-            arduino = send_byte(B_ON,arduino)
+            send_byte(B_ON)
         case 'B_OFF':
-            arduino = send_byte(B_OFF, arduino)
+            send_byte(B_OFF)
         case 'C_ON':
-            arduino = send_byte(C_ON, arduino)
+            send_byte(C_ON)
         case 'C_OFF':
-            arduino = send_byte(C_OFF, arduino)
+            send_byte(C_OFF)
         case 'WAIT':
-            arduino = wait(cmd[1], arduino)
+            wait(cmd[1])
         case default:
             print("Command not found")
     
