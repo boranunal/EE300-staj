@@ -8,7 +8,10 @@ arrToInt convert;
 const int PE=2;
 const int B=3;
 const int C=4;
+const int WLAN_SW=7;
+const int POWER=8;
 const int SERVO=10;
+
 //variables:
 uint32_t msec;
 uint32_t sec;
@@ -22,6 +25,8 @@ uint16_t qsize;
 bool runTest = true;
 
 //COMMANDS:
+const byte POWER_OFF = 0x20;
+const byte POWER_ON = 0x21;
 const byte START_CHARGING = 0x22;
 const byte PE_ON = 0x01;
 const byte PE_OFF = 0x11;
@@ -30,6 +35,8 @@ const byte B_OFF = 0x12;
 const byte C_ON = 0x03;
 const byte C_OFF = 0x13;
 const byte RFID = 0x33;
+const byte WLAN_DOWN = 0x51;
+const byte WLAN_UP = 0x52;
 const byte WAIT = 0x0F;
 const byte WAIT_MS = 0x1F;
 
@@ -41,6 +48,10 @@ void setup() {
   myservo.attach(SERVO);
   servoSetup();
   //servoSetup();
+  pinMode(POWER,OUTPUT);
+  digitalWrite(POWER,LOW);
+  pinMode(WLAN_SW,OUTPUT);
+  digitalWrite(WLAN_SW,LOW);
   pinMode(PE, OUTPUT);
   digitalWrite(PE,HIGH);
   pinMode(B, OUTPUT);
@@ -59,6 +70,12 @@ void loop() {
   while(!q.isEmpty()){
     q.pop(&cmd);
     switch(cmd){
+      case POWER_OFF:
+        digitalWrite(POWER,HIGH);
+        break;
+      case POWER_ON:
+        digitalWrite(POWER,LOW);
+        break;
       case START_CHARGING:
         startCharging();
         break;
@@ -85,7 +102,6 @@ void loop() {
         while(i>0)
           q.pop(&convert.arr[--i]);
          msec = convert.integer * 1000;
-         Serial.print(msec);
          delay(msec);
         break;
       case WAIT_MS:
@@ -93,15 +109,18 @@ void loop() {
         while(i>0)
           q.pop(&convert.arr[--i]);
          msec = convert.integer;
-         Serial.print(msec);
          delay(msec);
-
         break;
       case RFID:
         rfidScan();
         break;
+      case WLAN_DOWN:
+        digitalWrite(WLAN_SW,HIGH);
+        break;
+      case WLAN_UP:
+        digitalWrite(WLAN_SW,LOW);
+        break;
       default:
-        Serial.println("Command not found");
         break;
     }
   }

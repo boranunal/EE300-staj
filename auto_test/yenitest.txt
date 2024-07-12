@@ -1,0 +1,5 @@
+pe_on
+b_on
+c_on
+wait 10
+c_off

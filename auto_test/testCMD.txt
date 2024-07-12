@@ -1,0 +1,5 @@
+WLAN_DOWN
+rfid
+start_charging
+WAIT 100
+WLAN_UP

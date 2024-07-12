@@ -1,0 +1,5 @@
+power_off
+wait_ms 100
+power_on
+start_charging
+rfid
