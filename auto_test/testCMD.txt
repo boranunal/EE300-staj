@@ -1,5 +1,10 @@
 WLAN_DOWN
+wait 5
 rfid
 start_charging
-WAIT 100
+WAIT 40
 WLAN_UP
+c_off
+wait_ms 500
+b_off
+rfid

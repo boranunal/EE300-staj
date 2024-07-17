@@ -13,13 +13,14 @@ const int POWER=8;
 const int SERVO=10;
 
 //variables:
-uint32_t msec;
-uint32_t sec;
+unsigned long msec;
+unsigned long sec;
 byte cmd;
 byte data;
+byte recvd;
 //byte byteArr[700];
-char arr[4];
 int i;
+int temp;
 char reed;
 uint16_t qsize;
 bool runTest = true;
@@ -51,7 +52,7 @@ void setup() {
   pinMode(POWER,OUTPUT);
   digitalWrite(POWER,LOW);
   pinMode(WLAN_SW,OUTPUT);
-  digitalWrite(WLAN_SW,LOW);
+  digitalWrite(WLAN_SW,HIGH);
   pinMode(PE, OUTPUT);
   digitalWrite(PE,HIGH);
   pinMode(B, OUTPUT);
@@ -98,27 +99,31 @@ void loop() {
         digitalWrite(C,HIGH);
         break;
       case WAIT:
-        i = 4;
-        while(i>0)
-          q.pop(&convert.arr[--i]);
-         msec = convert.integer * 1000;
-         delay(msec);
+        i = 0;
+        while(i<4){
+          q.pop(&convert.arr[i++]);
+        }
+        Serial.println(convert.integer);
+        msec = convert.integer;
+        delay(1000*msec);
         break;
       case WAIT_MS:
-        i = 4;
-        while(i>0)
-          q.pop(&convert.arr[--i]);
-         msec = convert.integer;
-         delay(msec);
+        i = 0;
+        while(i<4){
+          q.pop(&convert.arr[i++]);
+        }
+        msec = convert.integer;
+        Serial.println(msec);
+        delay(msec);
         break;
       case RFID:
         rfidScan();
         break;
       case WLAN_DOWN:
-        digitalWrite(WLAN_SW,HIGH);
+        digitalWrite(WLAN_SW,LOW);
         break;
       case WLAN_UP:
-        digitalWrite(WLAN_SW,LOW);
+        digitalWrite(WLAN_SW,HIGH);
         break;
       default:
         break;
@@ -130,9 +135,9 @@ void recCmds(void){
   int count = 0;
   while(count<qsize){
     if(Serial.available()>0){
-      data = Serial.read();
-      if(data != -1){
+      if(Serial.readBytes(&data,1)){
         q.push(&data);
+        Serial.print(recvd);
         count++;
       }
     }
@@ -163,5 +168,5 @@ void hi(void){
   myservo.write(0);
   delay(1000);
   myservo.write(90);
-  delay(10000);
+  delay(1000);
 }

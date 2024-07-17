@@ -1,5 +1,10 @@
-pe_on
-b_on
-c_on
+start_charging
 wait 10
 c_off
+wlan_down
+wait 50
+wlan_up
+wait 50
+power_off
+wait 10
+power_on

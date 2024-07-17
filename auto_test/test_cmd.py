@@ -34,6 +34,7 @@ def byte_count(cmds):
     for cmd in cmds:
         cmd = cmd.strip()
         cmd = cmd.split()
+        cmd[0] = cmd[0].upper()
         if (cmd[0] == "WAIT" or cmd[0] == "WAIT_MS"):
             count = count + 5
         else:
@@ -67,10 +68,10 @@ def makeByteArr(cmds):
                 ret += C_OFF
             case 'WAIT':
                 ret += WAIT
-                ret += int(cmd[1]).to_bytes(4,byteorder='big')
+                ret += int(cmd[1]).to_bytes(4,byteorder='little')
             case 'WAIT_MS':
                 ret += WAIT_MS
-                ret += int(cmd[1]).to_bytes(4,byteorder='big')
+                ret += int(cmd[1]).to_bytes(4,byteorder='little')
             case 'RFID':
                 ret += RFID
             case 'WLAN_UP':
@@ -134,8 +135,22 @@ if __name__ == "__main__":
         print(".",end="")
         sleep(0.05)
     cmdToSend = makeByteArr(cmds)
+    print(cmdToSend)
     arduino.write(cmdToSend)
     sleep(0.1)
+    while(not arduino.in_waiting):
+        print(".",end="")
+        sleep(0.05)
+    read=arduino.read_until('?',numOfBytes)
+    print(read)
+    sleep(5)
+    print(arduino.readline())
+    sleep(5)
+    print(arduino.readline())
+    sleep(5)
+    print(arduino.readline())
+    sleep(5)
+    print(arduino.readline())
     arduino.close()
     input("End of transmission. You may close the program.")
 #### end of main ####          
