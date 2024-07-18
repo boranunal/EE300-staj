@@ -1,0 +1,24 @@
+rfid
+wait 1
+start_charging
+wait 10
+
+pe_on
+wait_ms 500
+b_on
+wait_ms 500
+c_on
+wait 20
+b_off
+wait 5
+b_on
+wait 10
+rfid
+wait 1
+c_off
+wait_ms 500
+b_off
+wait_ms 500
+pe_off
+wait 5
+repeat 3

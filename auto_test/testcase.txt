@@ -1,0 +1,25 @@
+
+rfid
+wait_ms 500
+   start_charging
+wait 30
+
+c_off
+wait_ms 500
+b_off
+wait 1
+pe_off
+wait_ms 700  hehe
+pe_on
+wait 2
+b_on
+wait 2
+c_on
+wait_ms 200
+  power_off	xd
+wait_ms   700
+power_on
+wait 100
+c_off
+
+

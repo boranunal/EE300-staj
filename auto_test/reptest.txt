@@ -1,0 +1,3 @@
+rfid
+wait 2
+repeat 10
